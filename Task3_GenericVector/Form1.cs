@@ -47,66 +47,60 @@ namespace Task3_GenericVector
     //тут решарпер предлагает ещё Equals и GetHashCode, но для задачи вроде не нужно
     public class Vector<T> 
     {
-
-        //!!!!!!!!!!!!!!!!!!!!!
-        public ValueType X;
-        public ValueType Y;
-
+        public T X;
+        public T Y;
+  
         //инициализация самого вектора
-        public Vector(ValueType x, ValueType y)
+        public Vector(T x, T y)
         {
             X = x;
             Y = y;
         }
 
         //определим операцию вычисления длины вектора
-        public double Length => Math.Sqrt((double)X * (double)X + (double)Y * (double)Y);
-
+        //тут думать!!!
+        //подумал.. пока не пришёл к пониманию, как записать короче - динамик тип ругается на попытку, к примеру, сложить его с произведением двух T: res1 +=v.X*v.X
+        //т.к. не знает, как перемножить 2 значения T
+        public dynamic Length(Vector<T> v)
+        {
+            dynamic res1 = default(T), res2 = default(T); 
+            res1 += v.X; res1 *= v.X;
+            res2 += v.Y; res2 *= v.Y;
+            res1 += res2;
+            res1 = Math.Sqrt(res1);
+            return res1;
+        }
 
         //определим оператор сложения двух векторов
         public static Vector<T> operator +(Vector<T> v1, Vector<T> v2)
         {
-            return new Vector<T>((double)v1.X + (double)v2.X, (double)v1.Y + (double)v2.Y);
+            dynamic resX = default(T), resY = default(T);
+            resX += v1.X; resX += v2.X;
+            resY += v1.Y; resY += v2.Y;
+            return new Vector<T>(resX, resY);
         }
 
         //определим оператор вычитания двух векторов
         public static Vector<T> operator -(Vector<T> v1, Vector<T> v2)
         {
-            return new Vector<T>((double)v1.X - (double)v2.X, (double)v1.Y - (double)v2.Y);
+            dynamic resX = default(T), resY = default(T);
+            resX += v1.X; resX -= v2.X;
+            resY += v1.Y; resY -= v2.Y;
+            return new Vector<T>(resX, resY);
         }
 
+        //тут для компактности переписал в строку и переписал часть условий, к примеру <= - это !>
+        public static bool operator <(Vector<T> v1, Vector<T> v2) { return v1.Length(v1) < v2.Length(v2); }
 
-        //!!!!!
-        public static bool operator <(Vector<T> v1, Vector<T> v2)
-        {
-            return v1.Length < v2.Length;
-        }
+        public static bool operator >(Vector<T> v1, Vector<T> v2) { return v1.Length(v1) > v2.Length(v2); }
+        
+        public static bool operator <=(Vector<T> v1, Vector<T> v2) { return !(v1 > v2); }
 
-        public static bool operator >(Vector<T> v1, Vector<T> v2)
-        {
-            return v1.Length > v2.Length;
-        }
+        public static bool operator >=(Vector<T> v1, Vector<T> v2) { return !(v1 < v2); }
 
+        public static bool operator ==(Vector<T> v1, Vector<T> v2) { return !(v1 > v2) && !(v1 < v2); }
 
-        public static bool operator <=(Vector<T> v1, Vector<T> v2)
-        {
-            return v1.Length <= v2.Length;
-        }
-
-        public static bool operator >=(Vector<T> v1, Vector<T> v2)
-        {
-            return v1.Length >= v2.Length;
-        }
-
-        public static bool operator ==(Vector<T> v1, Vector<T> v2)
-        {
-            return v1.Length == v2.Length;
-        }
-
-        public static bool operator !=(Vector<T> v1, Vector<T> v2)
-        {
-            return !(v1 == v2);
-        }
+        public static bool operator !=(Vector<T> v1, Vector<T> v2) { return !(v1 == v2); }
 
         public static string CompareVectors(Vector<T> v1, Vector<T> v2)
         {
@@ -114,8 +108,7 @@ namespace Task3_GenericVector
                 return "v1 > v2";
             if (v1 < v2)
                 return "v1 < v2";
-
-            return "v1 == v2";
+            return "v1 = v2";
         }
 
         public static string ToStringVec(Vector<T> v1, Vector<T> v2)
