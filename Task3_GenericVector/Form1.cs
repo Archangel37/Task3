@@ -45,80 +45,106 @@ namespace Task3_GenericVector
     //создадим класс для вектора
     //посчитал, что все векторы начинаются в (0,0) и у них есть только координаты конца (х,у)
     //тут решарпер предлагает ещё Equals и GetHashCode, но для задачи вроде не нужно
-    public class Vector<T> 
+
+    //Сначала поставил  TValueType, но потом почитал справку, он наследует от Object и вроде как туда входит и string
+    public class Vector<ValueType> 
     {
-        public T X;
-        public T Y;
-  
-        //инициализация самого вектора
-        public Vector(T x, T y)
-        {
-            X = x;
-            Y = y;
-        }
+    public ValueType X;
+    public ValueType Y;
 
-        //определим операцию вычисления длины вектора
-        //тут думать!!!
-        //подумал.. пока не пришёл к пониманию, как записать короче - динамик тип ругается на попытку, к примеру, сложить его с произведением двух T: res1 +=v.X*v.X
-        //т.к. не знает, как перемножить 2 значения T
-        public dynamic Length(Vector<T> v)
-        {
-            dynamic res1 = default(T), res2 = default(T); 
-            res1 += v.X; res1 *= v.X;
-            res2 += v.Y; res2 *= v.Y;
-            res1 += res2;
-            res1 = Math.Sqrt(res1);
-            return res1;
-        }
-
-        //определим оператор сложения двух векторов
-        public static Vector<T> operator +(Vector<T> v1, Vector<T> v2)
-        {
-            dynamic resX = default(T), resY = default(T);
-            resX += v1.X; resX += v2.X;
-            resY += v1.Y; resY += v2.Y;
-            return new Vector<T>(resX, resY);
-        }
-
-        //определим оператор вычитания двух векторов
-        public static Vector<T> operator -(Vector<T> v1, Vector<T> v2)
-        {
-            dynamic resX = default(T), resY = default(T);
-            resX += v1.X; resX -= v2.X;
-            resY += v1.Y; resY -= v2.Y;
-            return new Vector<T>(resX, resY);
-        }
-
-        //тут для компактности переписал в строку и переписал часть условий, к примеру <= - это !>
-        public static bool operator <(Vector<T> v1, Vector<T> v2) { return v1.Length(v1) < v2.Length(v2); }
-
-        public static bool operator >(Vector<T> v1, Vector<T> v2) { return v1.Length(v1) > v2.Length(v2); }
-        
-        public static bool operator <=(Vector<T> v1, Vector<T> v2) { return !(v1 > v2); }
-
-        public static bool operator >=(Vector<T> v1, Vector<T> v2) { return !(v1 < v2); }
-
-        public static bool operator ==(Vector<T> v1, Vector<T> v2) { return !(v1 > v2) && !(v1 < v2); }
-
-        public static bool operator !=(Vector<T> v1, Vector<T> v2) { return !(v1 == v2); }
-
-        public static string CompareVectors(Vector<T> v1, Vector<T> v2)
-        {
-            if (v1 > v2)
-                return "v1 > v2";
-            if (v1 < v2)
-                return "v1 < v2";
-            return "v1 = v2";
-        }
-
-        public static string ToStringVec(Vector<T> v1, Vector<T> v2)
-        {
-            return "Vector operations:" + Environment.NewLine +
-                   "Vector Summ: X(" + (v1 + v2).X + ") Y(" + (v1 + v2).Y + ")" + Environment.NewLine +
-                   "Vector Subtraction: X(" + (v1 - v2).X + ") Y(" + (v1 - v2).Y + ")" + Environment.NewLine +
-                   "Compare Vectors: " + CompareVectors(v1, v2) + Environment.NewLine;
-        }
+    //инициализация самого вектора
+    public Vector(ValueType x, ValueType y)
+    {
+        X = x;
+        Y = y;
     }
 
-   
+    //определим операцию вычисления длины вектора
+    //тут думать!!!
+    //подумал.. пока не пришёл к пониманию, как записать короче - динамик тип ругается на попытку, к примеру, сложить его с произведением двух T: res1 +=v.X*v.X
+    //т.к. не знает, как перемножить 2 значения T
+    public dynamic Length(Vector<ValueType> v)
+    {
+        dynamic res1 = default(ValueType), res2 = default(ValueType);
+        res1 += v.X;
+        res1 *= v.X;
+        res2 += v.Y;
+        res2 *= v.Y;
+        res1 += res2;
+        res1 = Math.Sqrt(res1);
+        return res1;
+    }
+
+    //определим оператор сложения двух векторов
+    public static Vector<ValueType> operator +(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        dynamic resX = default(ValueType), resY = default(ValueType);
+        resX += v1.X;
+        resX += v2.X;
+        resY += v1.Y;
+        resY += v2.Y;
+        return new Vector<ValueType>(resX, resY);
+    }
+
+    //определим оператор вычитания двух векторов
+    public static Vector<ValueType> operator -(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        dynamic resX = default(ValueType), resY = default(ValueType);
+        resX += v1.X;
+        resX -= v2.X;
+        resY += v1.Y;
+        resY -= v2.Y;
+        return new Vector<ValueType>(resX, resY);
+    }
+
+    //тут для компактности переписал в строку и переписал часть условий, к примеру <= - это !>
+    public static bool operator <(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return v1.Length(v1) < v2.Length(v2);
+    }
+
+    public static bool operator >(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return v1.Length(v1) > v2.Length(v2);
+    }
+
+    public static bool operator <=(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return !(v1 > v2);
+    }
+
+    public static bool operator >=(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return !(v1 < v2);
+    }
+
+    public static bool operator ==(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return !(v1 > v2) && !(v1 < v2);
+    }
+
+    public static bool operator !=(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return !(v1 == v2);
+    }
+
+    public static string CompareVectors(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        if (v1 > v2)
+            return "v1 > v2";
+        if (v1 < v2)
+            return "v1 < v2";
+        return "v1 = v2";
+    }
+
+    public static string ToStringVec(Vector<ValueType> v1, Vector<ValueType> v2)
+    {
+        return "Vector operations:" + Environment.NewLine +
+               "Vector Summ: X(" + (v1 + v2).X + ") Y(" + (v1 + v2).Y + ")" + Environment.NewLine +
+               "Vector Subtraction: X(" + (v1 - v2).X + ") Y(" + (v1 - v2).Y + ")" + Environment.NewLine +
+               "Compare Vectors: " + CompareVectors(v1, v2) + Environment.NewLine;
+    }
+    }
+
+
 }
