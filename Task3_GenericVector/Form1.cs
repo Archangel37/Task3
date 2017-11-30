@@ -23,6 +23,10 @@ namespace Task3_GenericVector
                 var vec1 = new Vector<double>(Convert.ToDouble(split1[0]), Convert.ToDouble(split1[1]));
                 var vec2 = new Vector<double>(Convert.ToDouble(split2[0]), Convert.ToDouble(split2[1]));
 
+                //var vec1 = new Vector<char>('A', 'B');
+                //var vec2 = new Vector<char>('a', 'b');
+                //richTextBox_result.Text += Vector<char>.ToStringVec(vec1, vec2);
+
                 richTextBox_result.Text += Vector<double>.ToStringVec(vec1, vec2);
             }
             catch (FormatException ex)
@@ -47,13 +51,20 @@ namespace Task3_GenericVector
     //тут решарпер предлагает ещё Equals и GetHashCode, но для задачи вроде не нужно
 
     //Сначала поставил  TValueType, но потом почитал справку, он наследует от Object и вроде как туда входит и string
-    public class Vector<ValueType> 
+    //https://stackoverflow.com/questions/6365459/create-non-nullable-types-in-c-sharp - тут нашёл
+    //https://docs.microsoft.com/ru-ru/dotnet/csharp/programming-guide/generics/constraints-on-type-parameters - и тут есть
+    //но тогда, видимо, не понял условие "где типом может быть
+    //только value значение" - потому как char тоже имеет значение и вектор Vector<char>('A', 'B') тоже можно создать, я сначала подумал, что только числа нужно
+    //так же добавить пришлось приведение типов в dynamic вычислениях - для char сильно ругается, когда получает int значения =) 
+    //return new Vector<T>((T)resX, (T)resY);
+    public class Vector<T>
+        where T : struct
     {
-    public ValueType X;
-    public ValueType Y;
+    public T X;
+    public T Y;
 
     //инициализация самого вектора
-    public Vector(ValueType x, ValueType y)
+    public Vector(T x, T y)
     {
         X = x;
         Y = y;
@@ -63,72 +74,75 @@ namespace Task3_GenericVector
     //тут думать!!!
     //подумал.. пока не пришёл к пониманию, как записать короче - динамик тип ругается на попытку, к примеру, сложить его с произведением двух T: res1 +=v.X*v.X
     //т.к. не знает, как перемножить 2 значения T
-    public dynamic Length(Vector<ValueType> v)
+    public dynamic Length(Vector<T> v)
     {
-        dynamic res1 = default(ValueType), res2 = default(ValueType);
+        dynamic res1 = default(T), res2 = default(T);
         res1 += v.X;
         res1 *= v.X;
         res2 += v.Y;
         res2 *= v.Y;
         res1 += res2;
         res1 = Math.Sqrt(res1);
-        return res1;
+        //Fixed type converting
+            return (T)res1;
     }
 
     //определим оператор сложения двух векторов
-    public static Vector<ValueType> operator +(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static Vector<T> operator +(Vector<T> v1, Vector<T> v2)
     {
-        dynamic resX = default(ValueType), resY = default(ValueType);
+        dynamic resX = default(T), resY = default(T);
         resX += v1.X;
         resX += v2.X;
         resY += v1.Y;
         resY += v2.Y;
-        return new Vector<ValueType>(resX, resY);
+        //Fixed type converting
+            return new Vector<T>((T)resX, (T)resY);
     }
 
     //определим оператор вычитания двух векторов
-    public static Vector<ValueType> operator -(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static Vector<T> operator -(Vector<T> v1, Vector<T> v2)
     {
-        dynamic resX = default(ValueType), resY = default(ValueType);
+        dynamic resX = default(T), resY = default(T);
         resX += v1.X;
         resX -= v2.X;
         resY += v1.Y;
         resY -= v2.Y;
-        return new Vector<ValueType>(resX, resY);
+        //Fixed type converting
+            return new Vector<T>((T)resX, (T)resY);
     }
 
     //тут для компактности переписал в строку и переписал часть условий, к примеру <= - это !>
-    public static bool operator <(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator <(Vector<T> v1, Vector<T> v2)
     {
         return v1.Length(v1) < v2.Length(v2);
     }
 
-    public static bool operator >(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator >(Vector<T> v1, Vector<T> v2)
     {
         return v1.Length(v1) > v2.Length(v2);
     }
 
-    public static bool operator <=(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator <=(Vector<T> v1, Vector<T> v2)
     {
         return !(v1 > v2);
     }
 
-    public static bool operator >=(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator >=(Vector<T> v1, Vector<T> v2)
     {
         return !(v1 < v2);
     }
 
-    public static bool operator ==(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator ==(Vector<T> v1, Vector<T> v2)
     {
         return !(v1 > v2) && !(v1 < v2);
     }
 
-    public static bool operator !=(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static bool operator !=(Vector<T> v1, Vector<T> v2)
     {
         return !(v1 == v2);
     }
 
-    public static string CompareVectors(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static string CompareVectors(Vector<T> v1, Vector<T> v2)
     {
         if (v1 > v2)
             return "v1 > v2";
@@ -137,7 +151,7 @@ namespace Task3_GenericVector
         return "v1 = v2";
     }
 
-    public static string ToStringVec(Vector<ValueType> v1, Vector<ValueType> v2)
+    public static string ToStringVec(Vector<T> v1, Vector<T> v2)
     {
         return "Vector operations:" + Environment.NewLine +
                "Vector Summ: X(" + (v1 + v2).X + ") Y(" + (v1 + v2).Y + ")" + Environment.NewLine +
